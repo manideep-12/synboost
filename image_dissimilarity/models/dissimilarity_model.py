@@ -282,10 +282,10 @@ class DissimNetPrior(nn.Module):
     
         if self.correlation:
             # get correlation for each layer (multiplication + 1x1 conv)
-            corr1 = torch.sum(torch.mul(encoding_og[0], encoding_syn[0]), dim=1).unsqueeze(dim=1)
-            corr2 = torch.sum(torch.mul(encoding_og[1], encoding_syn[1]), dim=1).unsqueeze(dim=1)
-            corr3 = torch.sum(torch.mul(encoding_og[2], encoding_syn[2]), dim=1).unsqueeze(dim=1)
-            corr4 = torch.sum(torch.mul(encoding_og[3], encoding_syn[3]), dim=1).unsqueeze(dim=1)
+            corr1 = torch.mul(torch.sum(torch.mul(encoding_og[0], encoding_syn[0]), dim=1),2).unsqueeze(dim=1)
+            corr2 = torch.mul(torch.sum(torch.mul(encoding_og[1], encoding_syn[1]), dim=1),2).unsqueeze(dim=1)
+            corr3 = torch.mul(torch.sum(torch.mul(encoding_og[2], encoding_syn[2]), dim=1),2).unsqueeze(dim=1)
+            corr4 = torch.mul(torch.sum(torch.mul(encoding_og[3], encoding_syn[3]), dim=1),2).unsqueeze(dim=1)
         
             # concatenate correlation layers
             layer4_cat = torch.cat((corr4, layer4_cat), dim=1)
