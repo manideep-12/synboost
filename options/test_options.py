@@ -16,7 +16,7 @@ class TestOptions(BaseOptions):
         # Segmentation
         parser.add_argument('--snapshot', type=str, default='/kaggle/input/segmentation-icnet',
                             help='pre-trained Segmentation checkpoint', required=False)
-        parser.add_argument('--arch', type=str, default='network.deepv3.DeepWV3Plus',
+        parser.add_argument('--arch', type=str, default='ICNet',
                             help='Network architecture used for Segmentation inference')
         
         parser.set_defaults(preprocess_mode='scale_width_and_crop', crop_size=256, load_size=256, display_winsize=256)
