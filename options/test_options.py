@@ -14,7 +14,7 @@ class TestOptions(BaseOptions):
         parser.add_argument('--no-segmentation', action='store_true', help='if specified, do *not* segment images since they are already created')
 
         # Segmentation
-        parser.add_argument('--snapshot', type=str, default='/kaggle/input/segmentation-icnet',
+        parser.add_argument('--snapshot', type=str, default='/kaggle/input/segmentation-icnet/icnet_final.pth',
                             help='pre-trained Segmentation checkpoint', required=False)
         parser.add_argument('--arch', type=str, default='network.deepv3.DeepWV3Plus',
                             help='Network architecture used for Segmentation inference')
