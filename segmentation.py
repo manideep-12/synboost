@@ -79,7 +79,7 @@ if not opt.no_segmentation:
         os.makedirs(os.path.join(opt.results_dir, 'temp', 'leftImg8bit', 'val'))
     
     # Loop around all figures
-    for img_id, img_name in enumerate(images):
+    for img_id, img_name in enumerate(images[1:):
         img_dir = os.path.join(data_dir, img_name)
         img = Image.open(img_dir).convert('RGB')
         img.save(os.path.join(original_fdr, img_name))
