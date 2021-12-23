@@ -9,7 +9,7 @@ class TestOptions(BaseOptions):
         parser.add_argument('--how_many', type=int, default=float("inf"), help='how many test images to run')
 
         # General
-        parser.add_argument('--demo-folder', type=str, default='/kaggle/input/synboostwo-data-generator/final_dataset/cityscapes_processed/original', help='path to the folder containing demo images',
+        parser.add_argument('--demo-folder', type=str, default='/kaggle/input/light-data/original', help='path to the folder containing demo images',
                             required=False)
         parser.add_argument('--no-segmentation', action='store_true', help='if specified, do *not* segment images since they are already created')
 
