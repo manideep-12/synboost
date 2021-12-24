@@ -15,7 +15,7 @@ id_to_trainid = cityscapes_labels.label2trainid
 objects_to_change = [7, 7, 7, 8, 11, 12, 13, 20, 21, 22, 24, 24, 24, 25, 26, 26, 26, 26, 26, 26, 26, 27, 28, 32, 33] # optmized
 #objects_to_change = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 25, 26, 27, 28, 31, 32, 33] # no person
 
-def create_unknown_examples(instance_path, semantic_path, original_path, save_dir, visualize=False, dynamic=False):
+def create_unknown_examples(instance_path, semantic_path, original_path, save_dir, visualize=False, dynamic=True):
 
     if not os.path.isdir(save_dir):
         os.mkdir(save_dir)
