@@ -9,12 +9,12 @@ class TestOptions(BaseOptions):
         parser.add_argument('--how_many', type=int, default=float("inf"), help='how many test images to run')
 
         # General
-        parser.add_argument('--demo-folder', type=str, default='/kaggle/input/light-data/original', help='path to the folder containing demo images',
+        parser.add_argument('--demo-folder', type=str, default='/kaggle/input/synboostwo-data-generator/final_dataset/cityscapes_processed/original', help='path to the folder containing demo images',
                             required=False)
         parser.add_argument('--no-segmentation', action='store_true', help='if specified, do *not* segment images since they are already created')
 
         # Segmentation
-        parser.add_argument('--snapshot', type=str, default='/kaggle/input/segmentation-icnet/icnet_final.pth',
+        parser.add_argument('--snapshot', type=str, default='/kaggle/input/sdcnet-cityscapes-segmentation/cityscapes_best (1).pth',
                             help='pre-trained Segmentation checkpoint', required=False)
         parser.add_argument('--arch', type=str, default='network.deepv3.DeepWV3Plus',
                             help='Network architecture used for Segmentation inference')
