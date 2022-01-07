@@ -82,7 +82,7 @@ if not opt.no_segmentation:
     for img_id, img_name in enumerate(images[1:]):
         img_dir = os.path.join(data_dir, img_name)
         img = Image.open(img_dir).convert('RGB')
-        img.save(os.path.join(original_fdr, img_name))
+        #img.save(os.path.join(original_fdr, img_name))
         img.save(os.path.join(opt.results_dir, 'temp', 'leftImg8bit', 'val', img_name[:-4] + '_leftImg8bit.png'))
         img_tensor = img_transform(img)
     
