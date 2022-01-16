@@ -51,12 +51,22 @@ if not os.path.exists(opt.results_dir):
 
 soft_fdr = os.path.join(opt.results_dir, 'entropy')
 soft_fdr_2 = os.path.join(opt.results_dir, 'logit_distance')
+semantic_fdr = os.path.join(opt.results_dir, 'semantic')
 
 if not os.path.exists(soft_fdr):
     os.makedirs(soft_fdr)
     
 if not os.path.exists(soft_fdr_2):
     os.makedirs(soft_fdr_2)
+    
+if not os.path.exists(semantic_fdr):
+    os.makedirs(semantic_fdr)
+    
+# creates temporary folder to adapt format to image synthesis
+if not os.path.exists(os.path.join(opt.results_dir, 'temp')):
+    os.makedirs(os.path.join(opt.results_dir, 'temp'))
+    os.makedirs(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val'))
+    os.makedirs(os.path.join(opt.results_dir, 'temp', 'leftImg8bit', 'val'))
 
 softmax = torch.nn.Softmax(dim=1)
 
@@ -64,6 +74,7 @@ softmax = torch.nn.Softmax(dim=1)
 for img_id, img_name in enumerate(images):
     img_dir = os.path.join(data_dir, img_name)
     img = Image.open(img_dir).convert('RGB')
+    img.save(os.path.join(opt.results_dir, 'temp', 'leftImg8bit', 'val', img_name[:-4] + '_leftImg8bit.png'))
     img_tensor = img_transform(img)
 
     # predict
@@ -93,7 +104,18 @@ for img_id, img_name in enumerate(images):
     map_logit = map_logit * 255
     pred_name = 'entropy_' + img_name
     pred_name_2 = 'distance_' + img_name
+    pred_name_3 = 'pred_mask_' + img_name
     cv2.imwrite(os.path.join(soft_fdr, pred_name), softmax_pred_og)
     cv2.imwrite(os.path.join(soft_fdr_2, pred_name_2), map_logit)
+    cv2.imwrite(os.path.join(semantic_fdr, pred_name_3), pred)
+    
+    # save label-based predictions, e.g. for submission purpose
+    label_out = np.zeros_like(pred)
+    for label_id, train_id in opt.dataset_cls.id_to_trainid.items():
+        label_out[np.where(pred == train_id)] = label_id
+    cv2.imwrite(os.path.join(semantic_label_fdr, pred_name), label_out)
+    cv2.imwrite(os.path.join(semantic_fdr, pred_name), pred)
+    cv2.imwrite(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val', pred_name[:-4] + '_instanceIds.png'), label_out)
+    cv2.imwrite(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val', pred_name[:-4] + '_labelIds.png'), label_out)
 
 print('Segmentation Results saved.')
