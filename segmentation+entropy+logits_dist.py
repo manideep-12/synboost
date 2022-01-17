@@ -110,12 +110,12 @@ for img_id, img_name in enumerate(images):
     cv2.imwrite(os.path.join(semantic_fdr, pred_name_3), pred)
     
     # save label-based predictions, e.g. for submission purpose
-    #label_out = np.zeros_like(pred)
-    #for label_id, train_id in opt.dataset_cls.id_to_trainid.items():
-    #    label_out[np.where(pred == train_id)] = label_id
-    #cv2.imwrite(os.path.join(semantic_label_fdr, pred_name), label_out)
-    #cv2.imwrite(os.path.join(semantic_fdr, pred_name), pred)
-    #cv2.imwrite(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val', pred_name[:-4] + '_instanceIds.png'), label_out)
-    #cv2.imwrite(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val', pred_name[:-4] + '_labelIds.png'), label_out)
+    label_out = np.zeros_like(pred)
+    for label_id, train_id in opt.dataset_cls.id_to_trainid.items():
+        label_out[np.where(pred == train_id)] = label_id
+    cv2.imwrite(os.path.join(semantic_label_fdr, pred_name), label_out)
+    cv2.imwrite(os.path.join(semantic_fdr, pred_name), pred)
+    cv2.imwrite(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val', pred_name[:-4] + '_instanceIds.png'), label_out)
+    cv2.imwrite(os.path.join(opt.results_dir, 'temp', 'gtFine', 'val', pred_name[:-4] + '_labelIds.png'), label_out)
 
 print('Segmentation Results saved.')
