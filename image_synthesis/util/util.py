@@ -220,7 +220,12 @@ def load_network(net, label, epoch, opt):
     save_filename = '%s_net_%s.pth' % (epoch, label)
     save_dir = os.path.join(opt.checkpoints_dir, opt.name)
     save_path = os.path.join(save_dir, save_filename)
-    save_path = '/kaggle/input/synthesis-original-path/latest_net_G.pth'
+    if(label == 'E'){
+        save_path = '/kaggle/input/synthesis-original-path/latest_net_E.pth'
+    }
+    else{
+        save_path = '/kaggle/input/synthesis-original-path/latest_net_G.pth'
+    }
     weights = torch.load(save_path, map_location=torch.device('cpu'))
     #weights = {k: v for k, v in weights.items() if k in net.state_dict()}
     #torch.save(weights, 'checkpoints/new.pth')
