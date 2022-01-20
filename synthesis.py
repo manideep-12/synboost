@@ -30,7 +30,7 @@ world_size = 1
 rank = 0
 
 # Corrects where dataset is in necesary format
-opt.dataroot = '/kaggle/input/semantic-icnet/results/temp'
+opt.dataroot = '/kaggle/input/fs-static-icent-segmentation-output/results/temp'
 
 opt.world_size = world_size
 opt.gpu = 0
