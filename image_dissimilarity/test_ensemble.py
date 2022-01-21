@@ -29,6 +29,7 @@ parser.add_argument('--wandb_run_id', type=str, default=None, help='Previous Run
 parser.add_argument('--wandb_run', type=str, default=None, help='Name of wandb run')
 parser.add_argument('--wandb_project', type=str, default="MLRC_Synboost", help='wandb project name')
 parser.add_argument('--wandb', type=bool, default=True, help='Log to wandb')
+parser.add_argument('--epoch', type=int, default=12, help='best epoch number in wandb')
 
 opts = parser.parse_args()
 cudnn.benchmark = True
