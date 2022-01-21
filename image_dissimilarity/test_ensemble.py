@@ -168,7 +168,7 @@ if __name__ == '__main__':
     wandb_utils.init_wandb(config=config, key=opts.wandb_Api_key,wandb_project= opts.wandb_project, wandb_run=opts.wandb_run, wandb_run_id=opts.wandb_run_id, wandb_resume=opts.wandb_resume)
     diss_model.eval()
     if use_wandb and wandb_resume:
-        checkpoint = load_ckp(config["wandb_config"]["model_path_base"], "best", 12)
+        checkpoint = load_ckp(config["wandb_config"]["model_path_base"], "best", epoch)
         diss_model.load_state_dict(checkpoint['state_dict'], strict=False)
     
     softmax = torch.nn.Softmax(dim=1)
