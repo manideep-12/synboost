@@ -51,7 +51,7 @@ def grid_search(model_num=4):
     d = {}
     w = [0, 1, 2, 3]
     best_score, best_roc, best_ap, best_weights = 1.0, 0, 0, None
-    best = 0
+    best = -1
     # iterate all possible combinations (cartesian product)
     for weights in product(w, repeat=model_num):
         # skip if all weights are equal
