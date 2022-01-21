@@ -50,6 +50,7 @@ def grid_search(model_num=4):
     d = {}
     w = [0, 1, 2, 3]
     best_score, best_roc, best_ap, best_weights = 1.0, 0, 0, None
+    best = 0
     # iterate all possible combinations (cartesian product)
     for weights in product(w, repeat=model_num):
         # skip if all weights are equal
@@ -64,8 +65,9 @@ def grid_search(model_num=4):
         # evaluate weights
         score_roc, score_ap, score_fp = evaluate_ensemble(weights)
         print('Weights: %s Score_FP: %.3f Score_ROC:%.3f Score_AP:%.3f' % (weights, score_fp, score_roc, score_ap))
-        if score_fp < best_score:
+        if score_ap - score_fp > best:
             best_score, best_weights, best_roc, best_ap = score_fp, weights, score_roc, score_ap
+            best = score_ap - score_fp
             print('>BEST SO FAR %s Score_FP: %.3f Score_ROC:%.3f Score_AP:%.3f' % (best_weights, best_score, best_roc, best_ap))
     return list(best_weights), best_score, best_roc, best_ap
 
