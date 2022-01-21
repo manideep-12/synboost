@@ -8,6 +8,12 @@ import os
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import ast
+from itertools import product
+from numpy.linalg import norm
+from util.load import load_ckp
+from util import wandb_utils
+from util.load import load_ckp
 
 from util import trainer_util, metrics
 from util.iter_counter import IterationCounter
@@ -15,10 +21,15 @@ from models.dissimilarity_model import DissimNet, DissimNetPrior
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', type=str, help='Path to the config file.')
-parser.add_argument('--gpu_ids',
-                    type=str,
-                    default='0',
-                    help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
+#parser.add_argument('--weights', type=str, default='[0.70, 0.1, 0.1, 0.1]', help='weights for ensemble testing [model, entropy, mae, distance]')
+parser.add_argument('--wandb_Api_key', type=str, default='None', help='Wandb_API_Key (Environment Variable)')
+parser.add_argument('--wandb_resume', type=bool, default=False, help='Resume Training')
+parser.add_argument('--wandb_run_id', type=str, default=None, help='Previous Run ID for Resuming')
+parser.add_argument('--wandb_run', type=str, default=None, help='Name of wandb run')
+parser.add_argument('--wandb_project', type=str, default="MLRC_Synboost", help='wandb project name')
+parser.add_argument('--wandb', type=bool, default=True, help='Log to wandb')
+
 opts = parser.parse_args()
 cudnn.benchmark = True
 
@@ -32,7 +43,7 @@ save_fdr = config['save_folder']
 epoch = config['which_epoch']
 store_fdr = config['store_results']
 store_fdr_exp = os.path.join(config['store_results'], exp_name)
-ensemble = config['ensemble']
+ensemble = True
 
 if not os.path.isdir(store_fdr):
     os.makedirs(store_fdr, exist_ok=True)
@@ -69,11 +80,13 @@ elif 'vgg' in config['model']['architecture']:
 else:
     raise NotImplementedError()
 
+use_wandb = opts.wandb
+wandb_resume = opts.wandb_resume
+wandb_utils.init_wandb(config=config, key=opts.wandb_Api_key,wandb_project= opts.wandb_project, wandb_run=opts.wandb_run, wandb_run_id=opts.wandb_run_id, wandb_resume=opts.wandb_resume)
 diss_model.eval()
-model_path = os.path.join(save_fdr, exp_name,
-                          '%s_net_%s.pth' % (epoch, exp_name))
-model_weights = torch.load(model_path)
-diss_model.load_state_dict(model_weights)
+if use_wandb and wandb_resume:
+    checkpoint = load_ckp(config["wandb_config"]["model_path_base"], "best", 12)
+    diss_model.load_state_dict(checkpoint['state_dict'], strict=False)
 
 softmax = torch.nn.Softmax(dim=1)
 
