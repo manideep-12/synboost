@@ -30,7 +30,7 @@ world_size = 1
 rank = 0
 
 # Corrects where dataset is in necesary format
-opt.dataroot = '/kaggle/input/lost-and-found-icnet-seg-output/results/temp'
+opt.dataroot = '/kaggle/input/road-anomaly-icnet-segmentation/results/temp'
 
 opt.world_size = world_size
 opt.gpu = 0
