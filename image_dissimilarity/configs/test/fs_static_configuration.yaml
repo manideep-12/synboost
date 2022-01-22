@@ -23,13 +23,13 @@ dataset:
 # parameters for dataloaders
 test_dataloader:
   dataset_args:
-    dataroot: /kaggle/input/light-data-synboost/Light data final/fs_static
+    dataroot: /kaggle/input/cityscapes-synboost/final_dataset/fs_static
     preprocess_mode: none
     crop_size: 512
     aspect_ratio: 2
     flip: False
     normalize: True
-    light_data: True
+    light_data: False
     roi: True
     void: False
     num_semantic_classes: 19
