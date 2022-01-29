@@ -29,7 +29,7 @@ def func(opts: DictConfig):
     working_dir = os.getcwd()
     print(f"The current working directory is {working_dir}")
 
-print(opts.config)
+# print(opts.config)
 print(opts.wandb)
 
 
