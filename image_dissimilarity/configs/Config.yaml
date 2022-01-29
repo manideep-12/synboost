@@ -1,0 +1,12 @@
+config: "configs/train/default_configuration.yaml"
+gpu_ids: '0'
+seed: '0'
+wandb_Api_key: '10989cf7d666f7d3bfcc31c6185448bda1a19767'
+wandb_resume: False
+wandb_run_id: "xyz"
+wandb_run:  "Hydra_Test"
+wandb_project: "Hydra Test"
+wandb: False
+pre_epoch: 0
+epochs: 1
+name: "Test_Hydra"

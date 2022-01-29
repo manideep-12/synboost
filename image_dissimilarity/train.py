@@ -21,29 +21,24 @@ from util.image_logging import ImgLogging
 from util import visualization
 from util import wandb_utils
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--config', type=str, help='Path to the config file.')
-parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
-parser.add_argument('--seed', type=str, default='0', help='seed for experiment')
-parser.add_argument('--wandb_Api_key', type=str, default='None', help='Wandb_API_Key (Environment Variable)')
-parser.add_argument('--wandb_resume', type=bool, default=False, help='Resume Training')
-parser.add_argument('--wandb_run_id', type=str, default=None, help='Previous Run ID for Resuming')
-parser.add_argument('--wandb_run', type=str, default=None, help='Name of wandb run')
-parser.add_argument('--wandb_project', type=str, default="MLRC_Synboost", help='wandb project name')
-parser.add_argument('--wandb', type=bool, default=True, help='Log to wandb')
-parser.add_argument('--pre_epoch', type=int, default=0, help='Previous epoch Number to resume training')
-parser.add_argument('--epochs', type=int, default=16, help='No. of epochs to run ')
-parser.add_argument('--name', type=str, default='latest', help='file Name of the resuming run')
-opts = parser.parse_args()
+import hydra
+from omegaconf import DictConfig
+
+@hydra.main(config_path="configs", config_name="config")
+def func(cfg: DictConfig):
+    working_dir = os.getcwd()
+    print(f"The current working directory is {working_dir}")
+
+
 cudnn.benchmark = True
 
 # Load experiment setting
-with open(opts.config, 'r') as stream:
+with open(config, 'r') as stream:
     config = yaml.load(stream, Loader=yaml.FullLoader)
 
 
 # get experiment information
-exp_name = config['experiment_name'] + opts.seed
+exp_name = config['experiment_name'] + seed
 save_fdr = config['save_folder']
 base_fdr = config['save_base_dir']
 logs_fdr = config['logger']['results_dir']
@@ -63,10 +58,10 @@ if not os.path.isdir(logs_fdr):
 #test_writer = SummaryWriter(os.path.join(logs_fdr, exp_name, 'test'), flush_secs=30)
 
 # Save config file use for experiment
-#shutil.copy(opts.config, os.path.join(logs_fdr, exp_name, 'config.yaml'))
+#shutil.copy(config, os.path.join(logs_fdr, exp_name, 'config.yaml'))
 
 # Activate GPUs
-config['gpu_ids'] = opts.gpu_ids
+config['gpu_ids'] = gpu_ids
 gpu_info = trainer_util.activate_gpus(config)
 
 # Get data loaders
@@ -108,22 +103,22 @@ h = int((dataset['crop_size']/dataset['aspect_ratio']))
 w = int(dataset['crop_size'])
 
 #initializing wandb
-if opts.wandb:
-    print(opts.wandb_resume)
-    wandb_utils.init_wandb(config=config, key=opts.wandb_Api_key,wandb_project= opts.wandb_project, wandb_run=opts.wandb_run, wandb_run_id=opts.wandb_run_id, wandb_resume=opts.wandb_resume)
+if wandb:
+    print(wandb_resume)
+    wandb_utils.init_wandb(config=config, key=owandb_Api_key,wandb_project= wandb_project, wandb_run=wandb_run, wandb_run_id=wandb_run_id, wandb_resume=wandb_resume)
 
 # create trainer for our model
 print('Loading Model')
-trainer = DissimilarityTrainer(config=config, wandb=opts.wandb, resume=opts.wandb_resume, epoch=opts.pre_epoch, name=opts.name, seed=int(opts.seed))
+trainer = DissimilarityTrainer(config=config, wandb=wandb, resume=wandb_resume, epoch=pre_epoch, name=name, seed=int(seed))
 
-#if opts.wandb:
-#    wandb_utils.init_wandb(config, opts.wandb_Api_key, opts.wandb_project, opts.wandb_run, opts.wandb_run_id, opts.wandb_resume)
+#if wandb:
+#    wandb_utils.init_wandb(config, wandb_Api_key, wandb_project, wandb_run, wandb_run_id, wandb_resume)
 
 
 # create tool for counting iterations
 batch_size = config['train_dataloader']['dataloader_args']['batch_size']
 #iter_counter = IterationCounter(config, len(train_loader), batch_size)
-iter_counter = IterationCounter(config, len(train_loader), batch_size, opts.epochs, opts.wandb, opts.wandb_resume, opts.pre_epoch)
+iter_counter = IterationCounter(config, len(train_loader), batch_size, epochs, wandb, wandb_resume, pre_epoch)
 
 
 # Softmax layer for testing
@@ -162,14 +157,14 @@ for epoch in iter_counter.training_epochs():
 
         train_loss += model_loss
         #train_writer.add_scalar('Loss_iter', model_loss, iter)
-        if opts.wandb:
+        if wandb:
             wandb.log({"Loss_iter_train": model_loss, "train_idx": idx_train})
         iter+=1
         idx_train +=1
         
     avg_train_loss = train_loss / len(train_loader)
     #train_writer.add_scalar('Loss_epoch', avg_train_loss, epoch)
-    if opts.wandb:
+    if wandb:
         wandb.log({"Loss_epoch_train":avg_train_loss, "epoch": epoch})
     
     print('Training Loss: %f' % (avg_train_loss))
@@ -199,7 +194,7 @@ for epoch in iter_counter.training_epochs():
         print('Validation Loss: %f' % avg_val_loss)
 
         #val_writer.add_scalar('Loss_epoch', avg_val_loss, epoch)
-        if opts.wandb:
+        if wandb:
             wandb.log({"Loss_epoch_val": avg_val_loss,
                 "epoch": epoch})
         
@@ -207,7 +202,7 @@ for epoch in iter_counter.training_epochs():
             print('Validation loss for epoch %d (%f) is better than previous best loss (%f). Saving best model.'
                   %(epoch, avg_val_loss, best_val_loss))
             best_val_loss = avg_val_loss
-            trainer.save(save_fdr, base_fdr, 'best', epoch, opts.wandb, idx_train)
+            trainer.save(save_fdr, base_fdr, 'best', epoch, wandb, idx_train)
             
     
     # Starts Testing (Test Set 1)
@@ -251,7 +246,7 @@ for epoch in iter_counter.training_epochs():
 
         avg_val_loss = val_loss / len(test_loader1)
 
-        if opts.wandb:
+        if wandb:
             wandb.log({
                 "AU_ROC_Test_1": results['auroc'],
                 "mAP_Test_1": results['AP'],
@@ -307,7 +302,7 @@ for epoch in iter_counter.training_epochs():
         print('FPR@95TPR: %f' % results['FPR@95%TPR'])
 
         cumul_map_sum += results['AP']
-        if opts.wandb:
+        if wandb:
             wandb.log({
                 "AU_ROC_Test_2": results['auroc'],
                 "mAP_Test_2": results['AP'],
@@ -365,7 +360,7 @@ for epoch in iter_counter.training_epochs():
         print('FPR@95TPR: %f' % results['FPR@95%TPR'])
         cumul_map_sum += results['AP']
         avg_val_loss = val_loss / len(test_loader3)
-        if opts.wandb:
+        if wandb:
             wandb.log({
                 "AU_ROC_Test_3": results['auroc'],
                 "mAP_Test_3": results['AP'],
@@ -387,8 +382,8 @@ for epoch in iter_counter.training_epochs():
             print('Cumulative mAP for epoch %d (%f) is better than previous best mAP (%f). Saving best model.'
                   % (epoch, cumul_map_sum, best_map_metric))
             best_map_metric = cumul_map_sum
-            if opts.wandb:
-                trainer.save(save_fdr, base_fdr, 'best_map', epoch, opts.wandb)
+            if wandb:
+                trainer.save(save_fdr, base_fdr, 'best_map', epoch, wandb)
 
         # Starts Testing (Test Set 4)
         print('Starting Testing For %s' % os.path.basename(cfg_test_loader4['dataset_args']['dataroot']))
@@ -438,7 +433,7 @@ for epoch in iter_counter.training_epochs():
                                #results['FPR@95%TPR'], epoch)
         #test_writer.add_scalar('val_loss_%s' % os.path.basename(cfg_test_loader4['dataset_args']['dataroot']),
                                #avg_val_loss, epoch)
-        if opts.wandb:
+        if wandb:
             wandb.log({
                 "AU_ROC_Test_4": results['auroc'],
                 "mAP_Test_4": results['AP'],
@@ -504,13 +499,13 @@ for epoch in iter_counter.training_epochs():
                     all_images[idx*5+4, :, :, :] = predictions_img
                 grid = make_grid(all_images, 5)
             #image_writer.add_image('results', grid, epoch)
-    if opts.wandb:
+    if wandb:
         wandb.log({"epoch": epoch})    
 
     print('saving the latest model (epoch %d, total_steps %d)' %
           (epoch, iter_counter.total_steps_so_far))
-    if opts.wandb:
-        trainer.save(save_fdr, base_fdr, 'latest', epoch, opts.wandb, idx_train)
+    if wandb:
+        trainer.save(save_fdr, base_fdr, 'latest', epoch, wandb, idx_train)
 
     trainer.update_learning_rate_schedule(avg_val_loss)
     iter_counter.record_epoch_end()
