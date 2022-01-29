@@ -29,8 +29,8 @@ def func(opts: DictConfig):
     working_dir = os.getcwd()
     print(f"The current working directory is {working_dir}")
 
-print(config)
-print(wandb)
+print(opts.config)
+print(opts.wandb)
 
 
 cudnn.benchmark = True
