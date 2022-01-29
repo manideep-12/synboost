@@ -24,7 +24,7 @@ from util import wandb_utils
 import hydra
 from omegaconf import DictConfig
 
-@hydra.main(config_path="configs", config_name="config")
+@hydra.main(config_path="configs", config_name="Config")
 def func(cfg: DictConfig):
     working_dir = os.getcwd()
     print(f"The current working directory is {working_dir}")
